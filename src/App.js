@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import firebase from "./firebase";
+import "./App.css";
 
-function App() {
+const Comments = () => {
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    const ref = firebase.database().ref("test");
+    ref.on("value", snapshot => {
+      setData(snapshot.val());
+    });
+    return () => {
+      ref.off();
+    };
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p>{JSON.stringify(data)}</p>
+    </div>
+  );
+};
+
+function App() {
+  const [visible, toggle] = useState(true);
+  return (
+    <div className="App">
+      <button onClick={() => toggle(!visible)}>Toggle</button>
+      {visible && <Comments />}
     </div>
   );
 }
